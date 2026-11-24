@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, loginSchema, type RegisterInput, type LoginInput } from '@pulsewatch/shared';
-import { Activity, AlertCircle, ArrowRight, ShieldCheck, KeyRound } from 'lucide-react';
+import { Activity, AlertCircle, ArrowRight, ShieldCheck, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { apiFetch, ApiClientError } from '@/api/client';
 import { useAuthStore, type AuthUser } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ export function LoginPage() {
   const location = useLocation();
   const setSession = useAuthStore((s) => s.setSession);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -116,13 +117,29 @@ export function LoginPage() {
 
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                {...register('password')}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  className="pr-9"
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-pw-muted hover:text-pw-primary focus:outline-none focus:ring-2 focus:ring-pw-primary/30 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
                 <p className="mt-1 text-[10.5px] text-pw-red">{errors.password.message}</p>
               )}
