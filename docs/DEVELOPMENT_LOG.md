@@ -38,3 +38,14 @@
 - Implemented `/api/v1/projects/:projectId/alert-rules`, `/api/v1/projects/:projectId/notifications`, and `/api/v1/notifications` (unread count, mark read, read all).
 - Built `AlertRulesPage` with channel selection (`IN_APP`, `EMAIL`), latency thresholds, cooldown windows, and delivery status log.
 - Verified alert rule validation and notification read-state lifecycle via `server/tests/alerts-notifications.test.ts`.
+
+## 2026-11-25 — Phase 7: Analytics & Public Status Pages Completed
+- Implemented `/api/v1/projects/:projectId/analytics` (`overview`, `response-times` with PostgreSQL `PERCENTILE_CONT(0.95)`, `uptime`, and `health-distribution`).
+- Implemented `/api/v1/projects/:projectId/status-pages`, `/api/v1/projects/:projectId/maintenance-windows`, and unauthenticated `/api/v1/public/status-pages/:slug` with strict DTO sanitization.
+- Converted `design-reference` into data-driven React components (`MetricCard`, `ResponseTimeChart`, `OverviewPage`), added `AnalyticsPage`, `StatusPagesManagePage`, and `PublicStatusPage` (`/status/:slug`).
+
+## 2026-11-25 — Phase 8: Testing & Production Readiness Completed
+- Added multi-stage production Dockerfiles (`server/Dockerfile`, `worker/Dockerfile`, `client/Dockerfile` + `client/nginx.conf`).
+- Authored idempotent database seed script (`prisma/seed.ts`) with demo credentials (`john@example.com` / `Password123`).
+- Added security hardening test suite (`server/tests/security-hardening.test.ts`) verifying Helmet headers, SQL injection parameterization, and brute-force rate limiting.
+- Verified full automated test suite and production builds across `@pulsewatch/shared`, `@pulsewatch/server`, `@pulsewatch/worker`, and `@pulsewatch/client`.

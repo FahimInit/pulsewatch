@@ -10,6 +10,21 @@ export default defineConfig({
       '@pulsewatch/shared': path.resolve(__dirname, '../shared/src/index.ts'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['recharts'],
+          radix: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-popover',
+          ],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {

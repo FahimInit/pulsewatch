@@ -9,5 +9,5 @@ All work targets the `master` branch with incremental feature commits and automa
 - [x] **Phase 4 — Monitoring Engine**: BullMQ job schedulers, socket-pinned HTTP checker, transactional `MonitoringResult` + `MonitorDailyRollup` persistence, 5-minute schedule reconciler, retention job, and Socket.IO live telemetry updates.
 - [x] **Phase 5 — Incident Management**: Consecutive failure/recovery threshold state machine, partial-unique-index deduplication, Incident list & timeline UI, Acknowledge / Investigation Notes / Manual Resolve workflows, and incident lifecycle tests.
 - [x] **Phase 6 — Notifications**: Configurable `AlertRule` engine with cooldowns, real-time in-app notification center, and Nodemailer SMTP alert worker.
-- [ ] **Phase 7 — Analytics & Public Status Pages**: SQL-backed Overview & Analytics charts (uptime, latency, health distribution) + Public Status Pages (`/status/:slug`) with 90-day uptime bars and `MaintenanceWindow` announcements.
-- [ ] **Phase 8 — Testing & Production Readiness**: End-to-end Vitest + Supertest security/integration verification, production Dockerfiles, seed data, and final documentation sign-off.
+- [x] **Phase 7 — Analytics & Public Status Pages**: SQL-backed Overview & Analytics charts (uptime, latency, health distribution) + Public Status Pages (`/status/:slug`) with 90-day uptime bars and `MaintenanceWindow` announcements.
+- [x] **Phase 8 — Testing & Production Readiness**: End-to-end Vitest + Supertest security/integration verification, production Dockerfiles, seed data, and final documentation sign-off.
