@@ -1,0 +1,39 @@
+{
+  "name": "pulsewatch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pulsewatch — API Monitoring & Incident Management Platform (PERN)",
+  "workspaces": [
+    "shared",
+    "server",
+    "worker",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,worker,web -c magenta,cyan,green \"npm run dev -w @pulsewatch/server\" \"npm run dev -w @pulsewatch/worker\" \"npm run dev -w @pulsewatch/client\"",
+    "dev:local": "node scripts/dev-local.mjs",
+    "build": "npm run build -w @pulsewatch/shared && npm run build -w @pulsewatch/server && npm run build -w @pulsewatch/worker && npm run build -w @pulsewatch/client",
+    "typecheck": "npm run typecheck -w @pulsewatch/shared && npm run typecheck -w @pulsewatch/server && npm run typecheck -w @pulsewatch/worker && npm run typecheck -w @pulsewatch/client",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "prisma generate --schema=prisma/schema.prisma",
+    "db:migrate": "prisma migrate deploy --schema=prisma/schema.prisma",
+    "db:migrate:dev": "prisma migrate dev --schema=prisma/schema.prisma",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "embedded-postgres": "16.16.0-beta.19",
+    "prisma": "6.19.3",
+    "redis-memory-server": "^0.17.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
