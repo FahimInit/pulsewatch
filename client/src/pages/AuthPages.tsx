@@ -212,30 +212,6 @@ export function RegisterPage() {
 
       <div className="mt-7 sm:mx-auto sm:w-full sm:max-w-[420px]">
         <div className="rounded-pw border border-pw-border bg-white p-7 shadow-xs">
-          <div className="mb-5 rounded-[10px] border border-[#ebe4ff] bg-[#f5f2ff] p-3.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-pw-primary">
-                <KeyRound className="h-3.5 w-3.5" />
-                Demo Account
-              </span>
-              <button
-                type="button"
-                onClick={fillDemoCredentials}
-                className="rounded-[6px] bg-white px-2.5 py-1 text-[10.5px] font-semibold text-pw-primary border border-[#ebe4ff] hover:bg-pw-primary hover:text-white transition-colors"
-              >
-                Auto-fill demo
-              </button>
-            </div>
-            <div className="mt-2 grid grid-cols-1 gap-1 text-[11px] text-[#676a80]">
-              <div>
-                Email: <code className="font-mono font-semibold text-pw-text">john@example.com</code>
-              </div>
-              <div>
-                Password: <code className="font-mono font-semibold text-pw-text">Password123</code>
-              </div>
-            </div>
-          </div>
-
           {serverError && (
             <div className="mb-4 flex items-start gap-2 rounded-[8px] border border-pw-red/25 bg-pw-red-bg px-3 py-2.5 text-[11.5px] text-pw-red">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
