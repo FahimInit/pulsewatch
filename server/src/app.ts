@@ -9,6 +9,7 @@ import { healthRouter } from './modules/health/health.routes';
 import { authRouter } from './modules/auth/auth.routes';
 import { projectsRouter } from './modules/projects/projects.routes';
 import { monitorsRouter } from './modules/monitors/monitors.routes';
+import { incidentsRouter } from './modules/incidents/incidents.routes';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
 
 export function createApp(): Express {
@@ -57,6 +58,7 @@ export function createApp(): Express {
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/projects', projectsRouter);
   app.use('/api/v1/projects/:projectId/monitors', monitorsRouter);
+  app.use('/api/v1/projects/:projectId/incidents', incidentsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
