@@ -1,48 +1,54 @@
-import dotenv from 'dotenv';
-import path from 'node:path';
-import pino from 'pino';
-import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { workerLogger, workerPrisma } from './config';
+import {
+  startMonitorCheckWorker,
+  startNotificationDispatchWorker,
+} from './processors/workers';
+import { startMaintenanceSubsystem } from './processors/maintenance.processor';
+import { closeEvaluatorConnections } from './engine/check-evaluator';
+import { closeWorkerPublisher } from './events/publisher';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-export const workerLogger = pino({
-  level: process.env.NODE_ENV === 'test' ? 'silent' : process.env.LOG_LEVEL || 'info',
-  ...(process.env.NODE_ENV === 'development'
-    ? {
-        transport: {
-          target: 'pino-pretty',
-          options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' },
-        },
-      }
-    : {}),
-});
-
-export const workerPrisma = new PrismaClient({
-  log: ['error'],
-});
-
-export function createWorkerRedisConnection(): Redis {
-  const url = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-  const conn = new Redis(url, {
-    maxRetriesPerRequest: null,
-  });
-  conn.on('error', (err) => {
-    workerLogger.error({ err }, 'Worker Redis connection error');
-  });
-  return conn;
-}
+export * from './checker/http-checker';
+export * from './engine/check-evaluator';
+export * from './processors/workers';
+export * from './processors/maintenance.processor';
+export * from './notifications/mailer';
 
 async function bootstrap(): Promise<void> {
-  const redis = createWorkerRedisConnection();
   await workerPrisma.$queryRaw`SELECT 1`;
-  await redis.ping();
-  workerLogger.info('Pulsewatch worker connected to PostgreSQL and Redis');
 
+  const checkWorker = startMonitorCheckWorker();
+  const notificationWorker = startNotificationDispatchWorker();
+  const { maintenanceQueue, maintenanceWorker, monitorProducerQueue } =
+    await startMaintenanceSubsystem();
+
+  workerLogger.info('Pulsewatch background monitoring engine online');
+
+  let shuttingDown = false;
   const shutdown = async (signal: string) => {
-    workerLogger.info({ signal }, 'Gracefully stopping Pulsewatch worker...');
-    await redis.quit().catch(() => redis.disconnect());
-    await workerPrisma.$disconnect();
+    if (shuttingDown) return;
+    shuttingDown = true;
+    workerLogger.info({ signal }, 'Draining in-flight BullMQ jobs before shutdown...');
+
+    const forceTimer = setTimeout(() => {
+      workerLogger.error('Graceful drain timed out after 35s; forcing exit');
+      process.exit(1);
+    }, 35_000);
+    forceTimer.unref();
+
+    await Promise.allSettled([
+      checkWorker.close(),
+      notificationWorker.close(),
+      maintenanceWorker.close(),
+    ]);
+    await Promise.allSettled([
+      maintenanceQueue.close(),
+      monitorProducerQueue.close(),
+      closeEvaluatorConnections(),
+      closeWorkerPublisher(),
+      workerPrisma.$disconnect(),
+    ]);
+
+    workerLogger.info('Pulsewatch worker exited cleanly');
     process.exit(0);
   };
 
@@ -52,7 +58,7 @@ async function bootstrap(): Promise<void> {
 
 if (require.main === module) {
   bootstrap().catch((err) => {
-    workerLogger.fatal({ err }, 'Pulsewatch worker failed to start');
+    workerLogger.fatal({ err }, 'Fatal error starting Pulsewatch worker');
     process.exit(1);
   });
 }

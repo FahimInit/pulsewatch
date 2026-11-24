@@ -23,3 +23,8 @@
 - Built `/api/v1/projects/:projectId/monitors` CRUD, pause/resume, manual `check-now`, check result history, quota enforcement, and BullMQ v5 `upsertJobScheduler`/`removeJobScheduler` synchronization.
 - Created `MonitorTable`, `MonitorFormDialog`, `MonitorsPage`, and `MonitorDetailPage` with Recharts response-time history.
 - Added unit and Supertest suites (`shared/tests/ssrf.test.ts`, `server/tests/monitors.test.ts`).
+
+## 2026-11-25 — Phase 4: Monitoring Engine & Real-Time Gateway Completed
+- Implemented socket-pinned HTTP/HTTPS checker (`worker/src/checker/http-checker.ts`) measuring DNS/TCP/TTFB/total latency, validating keywords, re-validating redirect hops against SSRF, and enforcing timeouts + `1 MB` payload limits.
+- Built transactional check evaluator (`SELECT ... FOR UPDATE`), daily rollup upsert (`MonitorDailyRollup`), self-healing 5-minute scheduler reconciler, and bounded raw retention pruner.
+- Attached authenticated Socket.IO gateway subscribed to Redis Pub/Sub (`pulsewatch:events`) and `useRealtimeSync` frontend hook.

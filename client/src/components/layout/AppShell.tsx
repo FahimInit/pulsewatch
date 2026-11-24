@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/api/client';
 import { useAuthStore, type WorkspaceProject } from '@/stores/auth-store';
+import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 
@@ -23,6 +24,8 @@ export function AppShell() {
   const projects = projectsQuery.data?.projects ?? [];
   const activeProject =
     projects.find((p) => p.id === activeProjectId) ?? projects[0] ?? null;
+
+  useRealtimeSync(activeProject?.id);
 
   useEffect(() => {
     if (projects.length > 0 && (!activeProjectId || !projects.some((p) => p.id === activeProjectId))) {
