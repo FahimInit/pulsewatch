@@ -13,7 +13,11 @@ export * from './processors/workers';
 export * from './processors/maintenance.processor';
 export * from './notifications/mailer';
 
-async function bootstrap(): Promise<void> {
+export interface WorkerHandle {
+  shutdown: () => Promise<void>;
+}
+
+export async function startWorkerEngine(): Promise<WorkerHandle> {
   await workerPrisma.$queryRaw`SELECT 1`;
 
   const checkWorker = startMonitorCheckWorker();
@@ -23,18 +27,10 @@ async function bootstrap(): Promise<void> {
 
   workerLogger.info('Pulsewatch background monitoring engine online');
 
-  let shuttingDown = false;
-  const shutdown = async (signal: string) => {
-    if (shuttingDown) return;
-    shuttingDown = true;
-    workerLogger.info({ signal }, 'Draining in-flight BullMQ jobs before shutdown...');
-
-    const forceTimer = setTimeout(() => {
-      workerLogger.error('Graceful drain timed out after 35s; forcing exit');
-      process.exit(1);
-    }, 35_000);
-    forceTimer.unref();
-
+  let stopped = false;
+  const shutdown = async () => {
+    if (stopped) return;
+    stopped = true;
     await Promise.allSettled([
       checkWorker.close(),
       notificationWorker.close(),
@@ -47,13 +43,33 @@ async function bootstrap(): Promise<void> {
       closeWorkerPublisher(),
       workerPrisma.$disconnect(),
     ]);
+    workerLogger.info('Pulsewatch worker drained cleanly');
+  };
 
-    workerLogger.info('Pulsewatch worker exited cleanly');
+  return { shutdown };
+}
+
+async function bootstrap(): Promise<void> {
+  const handle = await startWorkerEngine();
+
+  let shuttingDown = false;
+  const onSignal = async (signal: string) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    workerLogger.info({ signal }, 'Draining in-flight BullMQ jobs before shutdown...');
+
+    const forceTimer = setTimeout(() => {
+      workerLogger.error('Graceful drain timed out after 35s; forcing exit');
+      process.exit(1);
+    }, 35_000);
+    forceTimer.unref();
+
+    await handle.shutdown();
     process.exit(0);
   };
 
-  process.on('SIGINT', () => void shutdown('SIGINT'));
-  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+  process.on('SIGINT', () => void onSignal('SIGINT'));
+  process.on('SIGTERM', () => void onSignal('SIGTERM'));
 }
 
 if (require.main === module) {

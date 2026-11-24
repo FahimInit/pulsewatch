@@ -20,6 +20,14 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((val) => val === 'true'),
+  CROSS_SITE_COOKIES: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true'),
+  ENABLE_EMBEDDED_WORKER: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true'),
 });
 
 export type ServerEnv = z.infer<typeof envSchema>;

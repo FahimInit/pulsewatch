@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: pulsewatch-api
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm ci && npm run db:generate && npm run build -w @pulsewatch/shared && npm run build -w @pulsewatch/worker && npm run build -w @pulsewatch/server
+    startCommand: npx prisma migrate deploy --schema=prisma/schema.prisma && node server/dist/index.js
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENABLE_EMBEDDED_WORKER
+        value: "true"
+      - key: CROSS_SITE_COOKIES
+        value: "true"
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: PUBLIC_APP_URL
+        sync: false

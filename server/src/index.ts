@@ -13,6 +13,21 @@ async function bootstrap(): Promise<void> {
   const httpServer = http.createServer(app);
   const realtime = attachSocketGateway(httpServer);
 
+  let embeddedWorker: { shutdown: () => Promise<void> } | null = null;
+  if (env.ENABLE_EMBEDDED_WORKER) {
+    try {
+      // Loaded dynamically so server stays decoupled in multi-container deployments
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const workerMod = require('../../worker/dist/index.js') as {
+        startWorkerEngine: () => Promise<{ shutdown: () => Promise<void> }>;
+      };
+      embeddedWorker = await workerMod.startWorkerEngine();
+      logger.info('Embedded BullMQ monitoring worker started inside API process');
+    } catch (err) {
+      logger.error({ err }, 'Failed to start embedded worker (continuing as API-only)');
+    }
+  }
+
   httpServer.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'Pulsewatch API & Socket.IO server listening');
   });
@@ -20,6 +35,9 @@ async function bootstrap(): Promise<void> {
   const shutdown = async (signal: string) => {
     logger.info({ signal }, 'Shutting down Pulsewatch API server...');
     await realtime.close();
+    if (embeddedWorker) {
+      await embeddedWorker.shutdown();
+    }
     httpServer.close(async () => {
       await closeMonitorQueue();
       await closeSharedRedis();

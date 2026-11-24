@@ -40,10 +40,12 @@ function signAccessToken(user: { id: string; email: string; name: string }): str
 
 export function setRefreshCookie(res: Response, rawToken: string): void {
   const env = getEnv();
+  const sameSite = env.CROSS_SITE_COOKIES ? 'none' : 'strict';
+  const secure = env.NODE_ENV === 'production' || env.CROSS_SITE_COOKIES;
   res.cookie(env.REFRESH_COOKIE_NAME, rawToken, {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure,
+    sameSite,
     path: '/api/v1/auth',
     maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
   });
@@ -51,10 +53,12 @@ export function setRefreshCookie(res: Response, rawToken: string): void {
 
 export function clearRefreshCookie(res: Response): void {
   const env = getEnv();
+  const sameSite = env.CROSS_SITE_COOKIES ? 'none' : 'strict';
+  const secure = env.NODE_ENV === 'production' || env.CROSS_SITE_COOKIES;
   res.clearCookie(env.REFRESH_COOKIE_NAME, {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure,
+    sameSite,
     path: '/api/v1/auth',
   });
 }
