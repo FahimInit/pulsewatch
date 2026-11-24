@@ -33,3 +33,8 @@
 - Implemented `/api/v1/projects/:projectId/incidents` list, detail timeline, acknowledgement, status transitions (`INVESTIGATING`, `IDENTIFIED`, `MONITORING`), investigation notes, and manual resolution.
 - Built `IncidentItemCard`, `IncidentsPage`, and `IncidentDetailPage` timeline triage console.
 - Verified incident workflow and anti-IDOR guards via `server/tests/incidents.test.ts`.
+
+## 2026-11-25 — Phase 6: Alert Rules & Notifications Completed
+- Implemented `/api/v1/projects/:projectId/alert-rules`, `/api/v1/projects/:projectId/notifications`, and `/api/v1/notifications` (unread count, mark read, read all).
+- Built `AlertRulesPage` with channel selection (`IN_APP`, `EMAIL`), latency thresholds, cooldown windows, and delivery status log.
+- Verified alert rule validation and notification read-state lifecycle via `server/tests/alerts-notifications.test.ts`.
