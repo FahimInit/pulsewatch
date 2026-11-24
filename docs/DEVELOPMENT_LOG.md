@@ -17,3 +17,9 @@
 - Implemented `/api/v1/projects` multi-tenant workspace CRUD, collaborator RBAC (`OWNER`, `ADMIN`, `MEMBER`, `VIEWER`), audit log recording, and anti-IDOR middleware.
 - Built frontend silent refresh client, Zustand workspace store, Login/Register pages, `Sidebar` + `Topbar` + `AppShell`, and `SettingsPage`.
 - Verified auth, token replay detection, RBAC, and IDOR isolation via Supertest integration suite.
+
+## 2026-11-24 — Phase 3: Monitor Management & SSRF Guard Completed
+- Implemented pre-flight SSRF URL/DNS/header validator blocking private, loopback, link-local, metadata, CGNAT, multicast, and mapped-IPv6 targets.
+- Built `/api/v1/projects/:projectId/monitors` CRUD, pause/resume, manual `check-now`, check result history, quota enforcement, and BullMQ v5 `upsertJobScheduler`/`removeJobScheduler` synchronization.
+- Created `MonitorTable`, `MonitorFormDialog`, `MonitorsPage`, and `MonitorDetailPage` with Recharts response-time history.
+- Added unit and Supertest suites (`shared/tests/ssrf.test.ts`, `server/tests/monitors.test.ts`).
