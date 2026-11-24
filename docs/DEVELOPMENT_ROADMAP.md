@@ -3,7 +3,7 @@
 All work targets the `master` branch with incremental feature commits and automated test verification at every phase.
 
 - [x] **Phase 0 — Planning & Architecture**: System architecture, database schema, BullMQ strategy, SSRF security model, API contract, and milestone breakdown.
-- [ ] **Phase 1 — Foundation**: npm-workspaces monorepo (`shared`, `server`, `worker`, `client`), `design-reference/`, Docker Compose (`postgres`, `redis`, `mailpit`), Prisma schema + SQL migration, Pino structured logging, Express health probes, React shell converting the visual prototype, and GitHub Actions CI (`master`).
+- [x] **Phase 1 — Foundation**: npm-workspaces monorepo (`shared`, `server`, `worker`, `client`), `design-reference/`, Docker Compose (`postgres`, `redis`, `mailpit`), Prisma schema + SQL migration, Pino structured logging, Express health probes, React shell converting the visual prototype, and GitHub Actions CI (`master`).
 - [ ] **Phase 2 — Authentication & Projects**: Registration, login, rotating refresh tokens, logout, user profile/password settings, multi-project CRUD, collaborator RBAC, audit logs, and Auth/Project integration tests.
 - [ ] **Phase 3 — Monitor Management**: Shared IP/CIDR + DNS SSRF guard, Monitor CRUD + pause/resume + Check-Now endpoints, Monitor management UI & detail view, and URL/SSRF security test suite.
 - [ ] **Phase 4 — Monitoring Engine**: BullMQ job schedulers, socket-pinned HTTP checker, transactional `MonitoringResult` + `MonitorDailyRollup` persistence, 5-minute schedule reconciler, retention job, and Socket.IO live telemetry updates.
