@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pulsewatch — API Monitoring</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">P</div>
+        <span>pulsewatch</span>
+      </div>
+
+      <div class="workspace">
+        <div class="workspace-avatar">D</div>
+        <div>
+          <strong>Developer Workspace</strong>
+          <small>Free Plan</small>
+        </div>
+        <span class="chevron">⌄</span>
+      </div>
+
+      <nav>
+        <p class="nav-label">WORKSPACE</p>
+
+        <a class="nav-item active" href="#">
+          <span>▦</span> Overview
+        </a>
+
+        <a class="nav-item" href="#">
+          <span>◎</span> Monitors
+          <span class="nav-count">12</span>
+        </a>
+
+        <a class="nav-item" href="#">
+          <span>◷</span> Incidents
+          <span class="nav-count alert">2</span>
+        </a>
+
+        <a class="nav-item" href="#">
+          <span>⌁</span> Status Pages
+        </a>
+
+        <a class="nav-item" href="#">
+          <span>♧</span> Analytics
+        </a>
+
+        <p class="nav-label">CONFIGURATION</p>
+
+        <a class="nav-item" href="#">
+          <span>♢</span> Alert Rules
+        </a>
+
+        <a class="nav-item" href="#">
+          <span>⚙</span> Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="upgrade-card">
+          <strong>Need more monitors?</strong>
+          <p>Upgrade your plan to monitor more endpoints.</p>
+          <button>Explore plans →</button>
+        </div>
+
+        <div class="user-profile">
+          <div class="user-avatar">JD</div>
+          <div>
+            <strong>John Developer</strong>
+            <small>john@example.com</small>
+          </div>
+          <span>•••</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <header class="topbar">
+        <div class="breadcrumb">
+          Workspace <span>/</span> Overview
+        </div>
+
+        <div class="topbar-actions">
+          <div class="live-indicator">
+            <span></span> Live updates
+          </div>
+          <button class="icon-button">♧</button>
+          <div class="top-avatar">JD</div>
+        </div>
+      </header>
+
+      <section class="page-content">
+
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">MONITORING OVERVIEW</p>
+            <h1>Good morning, John 👋</h1>
+            <p class="subtitle">
+              Here's what's happening with your services today.
+            </p>
+          </div>
+
+          <div class="heading-actions">
+            <button class="button secondary">Last 24 hours⌄</button>
+            <button class="button primary">+ Add Monitor</button>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+
+          <div class="metric-card">
+            <div class="metric-top">
+              <span>Overall Uptime</span>
+              <span class="metric-icon purple">◎</span>
+            </div>
+            <h2>99.98%</h2>
+            <div class="metric-bottom">
+              <span class="positive">↑ 0.04%</span>
+              <span>vs previous period</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-top">
+              <span>Avg. Response Time</span>
+              <span class="metric-icon blue">◷</span>
+            </div>
+            <h2>142 <small>ms</small></h2>
+            <div class="metric-bottom">
+              <span class="positive">↓ 12.5%</span>
+              <span>vs previous period</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-top">
+              <span>Active Monitors</span>
+              <span class="metric-icon green">⌁</span>
+            </div>
+            <h2>12 <small>/ 20</small></h2>
+            <div class="metric-bottom">
+              <span class="neutral">8 available</span>
+              <span>monitor slots</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-top">
+              <span>Active Incidents</span>
+              <span class="metric-icon red">⚠</span>
+            </div>
+            <h2>02</h2>
+            <div class="metric-bottom">
+              <span class="negative">2 requiring attention</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="content-grid">
+
+          <section class="panel performance-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Response Time</h3>
+                <p>Average response time across all monitors</p>
+              </div>
+
+              <button class="button small secondary">Last 24 hours⌄</button>
+            </div>
+
+            <div class="chart-legend">
+              <span><i class="dot purple-dot"></i> Response time</span>
+              <strong>142 ms average</strong>
+            </div>
+
+            <div class="chart">
+              <div class="chart-y-axis">
+                <span>400ms</span>
+                <span>300ms</span>
+                <span>200ms</span>
+                <span>100ms</span>
+                <span>0ms</span>
+              </div>
+
+              <div class="chart-area">
+                <div class="grid-lines">
+                  <i></i><i></i><i></i><i></i><i></i>
+                </div>
+
+                <svg viewBox="0 0 700 220" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#8064ed" stop-opacity=".22"/>
+                      <stop offset="100%" stop-color="#8064ed" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+
+                  <path
+                    d="M0 140 L40 130 L80 145 L120 100 L160 115 L200 90 L240 120 L280 110 L320 65 L360 80 L400 95 L440 60 L480 85 L520 70 L560 100 L600 75 L640 90 L700 60 L700 220 L0 220 Z"
+                    fill="url(#chartFill)"
+                  />
+
+                  <path
+                    d="M0 140 L40 130 L80 145 L120 100 L160 115 L200 90 L240 120 L280 110 L320 65 L360 80 L400 95 L440 60 L480 85 L520 70 L560 100 L600 75 L640 90 L700 60"
+                    fill="none"
+                    stroke="#8064ed"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <div class="chart-x-axis">
+                  <span>12 AM</span>
+                  <span>4 AM</span>
+                  <span>8 AM</span>
+                  <span>12 PM</span>
+                  <span>4 PM</span>
+                  <span>8 PM</span>
+                  <span>Now</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel incidents-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Active Incidents</h3>
+                <p>Issues that need your attention</p>
+              </div>
+              <a href="#">View all →</a>
+            </div>
+
+            <div class="incident-item">
+              <div class="incident-icon red">!</div>
+              <div class="incident-info">
+                <strong>API Gateway Timeout</strong>
+                <small>api.example.com · 12 min ago</small>
+                <span class="status-badge investigating">Investigating</span>
+              </div>
+            </div>
+
+            <div class="incident-item">
+              <div class="incident-icon orange">!</div>
+              <div class="incident-info">
+                <strong>High Response Time</strong>
+                <small>payment.example.com · 35 min ago</small>
+                <span class="status-badge monitoring">Monitoring</span>
+              </div>
+            </div>
+
+            <div class="incident-footer">
+              <span>2 active incidents</span>
+              <a href="#">Manage incidents →</a>
+            </div>
+          </section>
+
+        </div>
+
+        <section class="panel monitors-panel">
+
+          <div class="panel-header">
+            <div>
+              <h3>Your Monitors</h3>
+              <p>Overview of your monitored services</p>
+            </div>
+
+            <div class="monitor-actions">
+              <input type="search" placeholder="Search monitors..." />
+              <button class="button small secondary">Filter⌄</button>
+              <button class="button small primary">+ Add Monitor</button>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>MONITOR</th>
+                  <th>STATUS</th>
+                  <th>UPTIME (24H)</th>
+                  <th>RESPONSE TIME</th>
+                  <th>LAST CHECKED</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <tr>
+                  <td>
+                    <div class="monitor-name">
+                      <div class="service-icon purple">A</div>
+                      <div>
+                        <strong>Production API</strong>
+                        <small>api.example.com</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status operational">● Operational</span></td>
+                  <td>100%</td>
+                  <td>124 ms</td>
+                  <td>30 seconds ago</td>
+                  <td>•••</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="monitor-name">
+                      <div class="service-icon blue">W</div>
+                      <div>
+                        <strong>Main Website</strong>
+                        <small>www.example.com</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status operational">● Operational</span></td>
+                  <td>99.99%</td>
+                  <td>89 ms</td>
+                  <td>45 seconds ago</td>
+                  <td>•••</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="monitor-name">
+                      <div class="service-icon orange">P</div>
+                      <div>
+                        <strong>Payment Service</strong>
+                        <small>payment.example.com</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status degraded">● Degraded</span></td>
+                  <td>98.45%</td>
+                  <td>842 ms</td>
+                  <td>20 seconds ago</td>
+                  <td>•••</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="monitor-name">
+                      <div class="service-icon green">A</div>
+                      <div>
+                        <strong>Authentication API</strong>
+                        <small>auth.example.com</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status operational">● Operational</span></td>
+                  <td>100%</td>
+                  <td>105 ms</td>
+                  <td>50 seconds ago</td>
+                  <td>•••</td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-footer">
+            <span>Showing 4 of 12 monitors</span>
+            <a href="#">View all monitors →</a>
+          </div>
+
+        </section>
+
+        <footer class="footer">
+          <span>© 2026 Pulsewatch</span>
+          <span>System operational · All services running</span>
+          <span>Documentation · Support</span>
+        </footer>
+
+      </section>
+    </main>
+  </div>
+</body>
+</html>
