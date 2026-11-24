@@ -1,9 +1,50 @@
-import net from 'node:net';
-
 export interface UrlValidationResult {
   valid: boolean;
   normalizedUrl?: string;
   reason?: string;
+}
+
+function isIpv4Literal(candidate: string): boolean {
+  const parts = candidate.split('.');
+  if (parts.length !== 4) return false;
+  for (const part of parts) {
+    if (!/^\d{1,3}$/.test(part)) return false;
+    if (part.length > 1 && part.startsWith('0')) return false;
+    const n = Number(part);
+    if (n < 0 || n > 255) return false;
+  }
+  return true;
+}
+
+function isIpv6Literal(candidate: string): boolean {
+  const clean = candidate.split('%')[0];
+  if (!clean.includes(':')) return false;
+  const doubleColonCount = clean.split('::').length - 1;
+  if (doubleColonCount > 1) return false;
+
+  let working = clean;
+  const lastColon = working.lastIndexOf(':');
+  if (lastColon !== -1 && working.slice(lastColon + 1).includes('.')) {
+    if (!isIpv4Literal(working.slice(lastColon + 1))) return false;
+    working = `${working.slice(0, lastColon)}:0:0`;
+  }
+
+  if (doubleColonCount === 1) {
+    const [left, right] = working.split('::');
+    const leftGroups = left ? left.split(':') : [];
+    const rightGroups = right ? right.split(':') : [];
+    if (leftGroups.length + rightGroups.length >= 8) return false;
+    return [...leftGroups, ...rightGroups].every((g) => /^[0-9a-fA-F]{1,4}$/.test(g));
+  }
+
+  const groups = working.split(':');
+  return groups.length === 8 && groups.every((g) => /^[0-9a-fA-F]{1,4}$/.test(g));
+}
+
+function detectIpVersion(candidate: string): 0 | 4 | 6 {
+  if (isIpv4Literal(candidate)) return 4;
+  if (isIpv6Literal(candidate)) return 6;
+  return 0;
 }
 
 const BLOCKED_HOSTNAMES = new Set([
@@ -102,7 +143,7 @@ const BLOCKED_IPV4_CIDRS: ReadonlyArray<[string, number, string]> = [
 
 function expandIpv6ToGroups(rawIp: string): number[] | null {
   const zoneStripped = rawIp.split('%')[0].toLowerCase();
-  if (!net.isIPv6(zoneStripped)) return null;
+  if (!isIpv6Literal(zoneStripped)) return null;
 
   let working = zoneStripped;
   // Convert trailing dotted-quad IPv4 (e.g. ::ffff:127.0.0.1) into two 16-bit groups
@@ -148,7 +189,7 @@ function groupsToIpv4String(hi: number, lo: number): string {
  */
 export function getBlockedIpReason(rawIp: string): string | null {
   const trimmed = rawIp.trim().replace(/^\[|\]$/g, '');
-  const version = net.isIP(trimmed.split('%')[0]);
+  const version = detectIpVersion(trimmed.split('%')[0]);
 
   if (version === 4) {
     const uint = ipv4ToUint32(trimmed);
@@ -294,7 +335,7 @@ export function validateMonitorUrlStructure(
       }
     }
 
-    if (net.isIP(rawHost) !== 0) {
+    if (detectIpVersion(rawHost) !== 0) {
       const ipBlockReason = getBlockedIpReason(rawHost);
       if (ipBlockReason) {
         return { valid: false, reason: ipBlockReason };
