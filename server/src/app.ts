@@ -14,6 +14,11 @@ import {
   projectAlertsRouter,
   userNotificationsRouter,
 } from './modules/alerts/alerts.routes';
+import { analyticsRouter } from './modules/analytics/analytics.routes';
+import {
+  projectStatusPagesRouter,
+  publicStatusRouter,
+} from './modules/status-pages/status-pages.routes';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
 
 export function createApp(): Express {
@@ -64,7 +69,10 @@ export function createApp(): Express {
   app.use('/api/v1/projects/:projectId/monitors', monitorsRouter);
   app.use('/api/v1/projects/:projectId/incidents', incidentsRouter);
   app.use('/api/v1/projects/:projectId', projectAlertsRouter);
+  app.use('/api/v1/projects/:projectId/analytics', analyticsRouter);
+  app.use('/api/v1/projects/:projectId', projectStatusPagesRouter);
   app.use('/api/v1/notifications', userNotificationsRouter);
+  app.use('/api/v1/public', publicStatusRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
