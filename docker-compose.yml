@@ -1,0 +1,114 @@
+name: pulsewatch
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pulsewatch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pulsewatch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pulsewatch_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-pulsewatch}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-pulsewatch} -d $${POSTGRES_DB:-pulsewatch}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: pulsewatch-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.22
+    container_name: pulsewatch-mailpit
+    restart: unless-stopped
+    ports:
+      - "${SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: pulsewatch-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pulsewatch}:${POSTGRES_PASSWORD:-pulsewatch_dev_password}@postgres:5432/${POSTGRES_DB:-pulsewatch}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-in-production-min-32-characters-access-secret}
+      CLIENT_ORIGIN: http://localhost:8080
+      PUBLIC_APP_URL: http://localhost:8080
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+    ports:
+      - "4000:4000"
+
+  worker:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: pulsewatch-worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pulsewatch}:${POSTGRES_PASSWORD:-pulsewatch_dev_password}@postgres:5432/${POSTGRES_DB:-pulsewatch}?schema=public
+      REDIS_URL: redis://redis:6379
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      PUBLIC_APP_URL: http://localhost:8080
+
+  client:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:4000/api/v1
+        VITE_SOCKET_URL: http://localhost:4000
+    container_name: pulsewatch-client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "8080:80"
+
+volumes:
+  postgres_data:
+  redis_data:

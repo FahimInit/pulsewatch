@@ -1,0 +1,78 @@
+name: Pulsewatch CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, Build & Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pulsewatch
+          POSTGRES_PASSWORD: pulsewatch_test_password
+          POSTGRES_DB: pulsewatch_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U pulsewatch -d pulsewatch_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=10
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://pulsewatch:pulsewatch_test_password@localhost:5432/pulsewatch_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: ci-test-jwt-access-secret-minimum-32-chars-long
+      ALLOW_PRIVATE_MONITOR_TARGETS: "false"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client & deploy migrations
+        run: |
+          npm run db:generate
+          npx prisma migrate deploy
+
+      - name: Typecheck all workspaces
+        run: npm run typecheck
+
+      - name: Run automated test suites
+        run: npm test
+
+      - name: Build production bundles
+        run: npm run build
