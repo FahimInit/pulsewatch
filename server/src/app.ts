@@ -6,6 +6,8 @@ import pinoHttp from 'pino-http';
 import { getEnv } from './config/env';
 import { logger } from './config/logger';
 import { healthRouter } from './modules/health/health.routes';
+import { authRouter } from './modules/auth/auth.routes';
+import { projectsRouter } from './modules/projects/projects.routes';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
 
 export function createApp(): Express {
@@ -51,6 +53,8 @@ export function createApp(): Express {
   }
 
   app.use('/api/v1', healthRouter);
+  app.use('/api/v1/auth', authRouter);
+  app.use('/api/v1/projects', projectsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
